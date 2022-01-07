@@ -9,3 +9,120 @@
 @import 'styles/suggest.css';
 @import 'styles/footer.css';
 @import 'styles/hidden.css';
+
+// General Vars
+$bg-color: lightblue;
+$font-sz: 2.1em;
+$rnd-border: 10px;
+
+// Display
+$bg-display: black;
+$num-color: rgb(102, 255, 102);
+
+// Buttons
+$bg-button: white;
+$button-shadow: rgb(100, 100, 100);
+$button-trans: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+$equal-btn: rgb(230, 100, 0);
+
+body {
+  font-family: sans-serif;
+  font-size: $font-sz;
+  background-color: $bg-color;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#displayNumDiv {
+  height: 100px;
+  margin-bottom: 10px;
+  color: $num-color;
+  background-color: $bg-display;
+  border-radius: $rnd-border;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+#display {
+  width: 90%;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+#buttonDiv {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+#opsDiv {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+}
+
+.numButton {
+  height: 100px;
+  width: 100px;
+  background-color: $bg-button;
+  border-radius: $rnd-border;
+  margin: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 3px $button-shadow;
+  transition: $button-trans;
+  -moz-transition: $button-trans;
+  -webkit-transition: $button-trans;
+}
+
+.numButton:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.equalsButton {
+  @extend .numButton;
+  height: 78px;
+  width: 80px;
+  background-color: $equal-btn;
+}
+
+.opsButton {
+  @extend .equalsButton;
+  background-color: $bg-button;
+}
+
+@media only screen and (max-width: 500px) {
+  body {
+    font-size: 1.3em;
+  }
+
+  #displayNumDiv {
+    height: 60px;
+    margin-bottom: 10px;
+  }
+
+  .numButton {
+    height: 50px;
+    width: 50px;
+  }
+
+  .equalsButton {
+    height: 38px;
+    width: 58px;
+    background-color: $equal-btn;
+  }
+
+  .opsButton {
+    background-color: $bg-button;
+  }
+}
