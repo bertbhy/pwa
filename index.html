@@ -14,7 +14,7 @@
 	<link rel="icon" href="favicon.ico">
 	<link rel="icon" type="image/png" sizes="228x228" href="images/icon-228x228.png">
 	<link rel="apple-touch-icon" type="image/png" href="images/icon-228x228.png">
-	<link rel="canonical" href="https://pwa.rocks/">
+	<link rel="canonical" href="https://bertbhy.github.io/pwa/">
 
 </head>
 <body class="page">
@@ -1093,7 +1093,10 @@
 	</footer>
 
 	<script src="script.js"></script>
-	<script src="service-worker.js"> 	
+	<script> 
+  if (navigator.serviceWorker) {
+    navigator.serviceWorker.register('https://bertbhy.github.io/pwa/service-worker.js', {scope: '/pwa/'})
+  }		
 	</script>
 
 </body>
