@@ -1,70 +1,120 @@
-(function() {
+"use strict";
 
-	// Storage. Courtesy of Mathias Bynens
-	// https://mathiasbynens.be/notes/localstorage-pattern
+const input = document.querySelector(".input");
+const result = document.querySelector(".result");
+const deleteBtn = document.querySelector(".delete");
+const keys = document.querySelectorAll(".bottom span");
 
-	var storage = (function() {
-		var uid = new Date;
-		var storage;
-		var result;
-		try {
-			(storage = window.sessionStorage).setItem(uid, uid);
-			result = storage.getItem(uid) == uid;
-			storage.removeItem(uid);
-			return result && storage;
-		} catch (exception) {}
-	}());
+let operation = "";
+let answer;
+let decimalAdded = false;
 
-	// Shuffle. Courtesy of Dudley Storey
-	// https://thenewcode.com/82/Recipes-for-Randomness-in-JavaScript
+const operators = ["+", "-", "x", "÷"];
 
-	var shuffle = (function (array) {
-		for (var j, x, i = array.length; i; j = parseInt(Math.random() * i), x = array[--i], array[i] = array[j], array[j] = x);
-		return array;
-	});
+function handleKeyPress (e) {
+  const key = e.target.dataset.key;
+  const lastChar = operation[operation.length - 1];
 
-	// Elements
+  if (key === "=") {
+    return;
+  }
 
-	var tags = document.querySelectorAll('.js-tag');
-	var list = document.querySelector('.js-list');
-	var apps = document.querySelectorAll('.js-app');
-	var suggest = document.querySelector('.js-suggest');
+  if (key === "." && decimalAdded) {
+    return;
+  }
 
-	// Tags
+  if (operators.indexOf(key) !== -1) {
+    decimalAdded = false;
+  }
 
-	tags[0].checked = true;
+  if (operation.length === 0 && key === "-") {
+    operation += key;
+    input.innerHTML = operation;
+    return;
+  }
 
-	for (var i = 0; i < tags.length; i++) {
-		tags[i].addEventListener('change', function() {
-			list.dataset.filter = this.value;
-		});
-	}
+  if (operation.length === 0 && operators.indexOf(key) !== -1) {
+    input.innerHTML = operation;
+    return;
+  }
 
-	// Reorder
+  if (operators.indexOf(lastChar) !== -1 && operators.indexOf(key) !== -1) {
+    operation = operation.replace(/.$/, key);
+    input.innerHTML = operation;
+    return;
+  }
 
-	function getOrder(array) {
-		var order = [];
-		for (var i = 0; i < array.length; i++) {
-			order.push(array[i].dataset.app);
-		}
+  if (key) {
+    if (key === ".") decimalAdded = true;
+    operation += key;
+    input.innerHTML = operation;
+    return;
+  }
 
-		return order;
-	}
+}
 
-	function setOrder(order) {
-		if (storage) {
-			var item = storage.getItem('pwa-list-order');
-			order = item ? item.split(',') : order;
-		}
+function evaluate(e) {
+  const key = e.target.dataset.key;
+  const lastChar = operation[operation.length - 1];
 
-		for (var i = 0; i < order.length; i++) {
-			var item = list.querySelector('[data-app=' + order[i] + ']');
-			list.insertBefore(item, suggest);
-		}
+  if (key === "=" && operators.indexOf(lastChar) !== -1) {
+    operation = operation.slice(0, -1);
+  }
 
-		storage.setItem('pwa-list-order', order.join());
-	}
+  if (operation.length === 0) {
+    answer = "";
+    result.innerHTML = answer;
+    return;
+  }
 
-	setOrder(shuffle(getOrder(apps)));
+  try {
 
-}());
+    if (operation[0] === "0" && operation[1] !== "." && operation.length > 1) {
+      operation = operation.slice(1);
+    }
+
+    const final = operation.replace(/x/g, "*").replace(/÷/g, "/");
+    answer = +(eval(final)).toFixed(5);
+
+    if (key === "=") {
+      decimalAdded = false;
+      operation = `${answer}`;
+      answer = "";
+      input.innerHTML = operation;
+      result.innerHTML = answer;
+      return;
+    }
+
+    result.innerHTML = answer;
+
+  } catch (e) {
+    if (key === "=") {
+      decimalAdded = false;
+      input.innerHTML = `<span class="error">${operation}</span>`;
+      result.innerHTML = `<span class="error">Bad Expression</span>`;
+    }
+    console.log(e);
+  }
+
+}
+
+function clearInput (e) {
+
+  if (e.ctrlKey) {
+    operation = "";
+    answer = "";
+    input.innerHTML = operation;
+    result.innerHTML = answer;
+    return;
+  }
+
+  operation = operation.slice(0, -1);
+  input.innerHTML = operation;
+
+}
+
+deleteBtn.addEventListener("click", clearInput);
+keys.forEach(key => {
+  key.addEventListener("click", handleKeyPress);
+  key.addEventListener("click", evaluate);
+});
